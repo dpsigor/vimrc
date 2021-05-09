@@ -14,7 +14,7 @@ let [g:ctrlp_lines, g:ctrlp_allfiles, g:ctrlp_alltags, g:ctrlp_alldirs,
 	\ g:ctrlp_allmixes, g:ctrlp_buftags, g:ctrlp_ext_vars, g:ctrlp_builtins]
 	\ = [[], [], [], [], {}, {}, [], 2]
 
-if !exists('g:ctrlp_map') | let g:ctrlp_map = '<c-p>' | en
+if !exists('g:ctrlp_map') | let g:ctrlp_map = '<m-p>' | en
 if !exists('g:ctrlp_cmd') | let g:ctrlp_cmd = 'CtrlP' | en
 
 com! -n=? -com=dir CtrlP         cal ctrlp#init(0, { 'dir': <q-args> })
