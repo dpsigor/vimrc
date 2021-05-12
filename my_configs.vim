@@ -243,3 +243,9 @@ syntax sync fromstart
 
 " Prettier
 nnoremap <leader>p :Prettier<CR>
+
+" Atalho para cgn
+nnoremap c* *Ncgn
+
+" Atalho para Git Status
+nnoremap <leader>g :G<CR>
