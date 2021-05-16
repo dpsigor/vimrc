@@ -48,9 +48,6 @@ set hidden
 set nobackup
 set nowritebackup
 
-" Give more space for displaying messages.
-set cmdheight=1 " Voltar para 2?
-
 " Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
 " delays and poor user experience.
 set updatetime=300
@@ -67,25 +64,12 @@ else
   set signcolumn=yes
 endif
 
-" Use tab for trigger completion with characters ahead and navigate.
-" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
-" other plugin before putting this into your config.
-" inoremap <silent><expr> <TAB>
-"       \ pumvisible() ? "\<C-n>" :
-"       \ <SID>check_back_space() ? "\<TAB>" :
-"       \ coc#refresh()
-" inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-" function! s:check_back_space() abort
-"   let col = col('.') - 1
-"   return !col || getline('.')[col - 1]  =~# '\s'
-" endfunction
-
 syntax on
 filetype plugin indent on
 
 "---------------------------- Plugins ----------------------------
 call plug#begin('~/.vim/plugged')
+Plug 'dense-analysis/ale'
 Plug 'junegunn/vim-easy-align'
 " post install (yarn install | npm install) then load plugin only for editing supported files
 Plug 'prettier/vim-prettier', {
@@ -107,6 +91,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 " Language Server
 Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/vim-lsp'
 Plug 'mattn/vim-lsp-settings'
 " Plug 'autozimu/LanguageClient-neovim', {
@@ -134,9 +119,13 @@ call plug#end()
 let g:deoplete#enable_at_startup = 1
 
 colorscheme gruvbox
+set cursorline
+set cursorlineopt=number
+" highlight CursorLine ctermbg=0
+highlight CursorLineNr ctermfg=Yellow ctermbg=0
 
 " Background transparente
-hi Normal guibg=NONE ctermbg=NONE
+highlight Normal guibg=NONE ctermbg=NONE
 
 " EasyAlign
 " Start interactive EasyAlign in visual mode (e.g. vipga)
@@ -218,7 +207,6 @@ augroup END
 let g:gitgutter_enabled=1
 let g:gitgutter_set_sign_backgrounds=1
 set signcolumn=yes
-nmap <Leader>hp <Plug>(GitGutterPreviewHunk)
 nmap [h <plug>(GitGutterPrevHunk)
 nmap ]h <plug>(GitGutterNextHunk)
 highlight GitGutterAdd    guifg=#009900 ctermfg=2
@@ -226,9 +214,21 @@ highlight GitGutterChange guifg=#bbbb00 ctermfg=3
 highlight GitGutterDelete guifg=#ff2222 ctermfg=1
 
 " ------- Open FZF search in vim -------------------
-autocmd VimEnter * map <C-f> <Esc><Esc>:GFiles!<CR>
-autocmd VimEnter * inoremap <C-f> <Esc><Esc>:BLines!<CR>
-autocmd VimEnter * map <C-g> <Esc><Esc>:BCommits!<CR>
+map <C-f> <Esc><Esc>:GFiles!<CR>
+inoremap <C-f> <Esc><Esc>:BLines!<CR>
+map <C-g> <Esc><Esc>:BCommits!<CR>
+
+function! s:build_quickfix_list(lines)
+  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
+  copen
+  cc
+endfunction
+
+let g:fzf_action = {
+  \ 'ctrl-q': function('s:build_quickfix_list'),
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
 
 " Navegar buffers
 nmap <C-d> <Esc><Esc>:Buffers<CR>
@@ -242,10 +242,32 @@ set redrawtime=10000
 syntax sync fromstart
 
 " Prettier
-nnoremap <leader>p :Prettier<CR>
+nnoremap <leader>f :Prettier<CR>
 
 " Atalho para cgn
 nnoremap c* *Ncgn
 
 " Atalho para Git Status
 nnoremap <leader>g :G<CR>
+
+" asyncomplete
+inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
+imap <c-space> <Plug>(asyncomplete_force_refresh)
+
+" ALE
+let g:ale_disable_lsp = 1
+let g:ale_fixers = {
+\   '*': ['remove_trailing_lines', 'trim_whitespace'],
+\   'javascript': ['eslint'],
+\}
+let g:airline#extensions#ale#enabled = 1
+" let g:ale_lint_on_text_changed = 'never'
+" let g:ale_lint_on_insert_leave = 0
+" let g:ale_lint_on_enter = 0
+let g:ale_sign_error = '❌'
+let g:ale_sign_info = '🤔'
+let g:ale_sign_style_error = '❌'
+let g:ale_sign_style_warning = '🤔'
+let g:ale_sign_warning = '🤔'
+nnoremap ]l :ALENext<CR>
+nnoremap [l :ALEPrevious<CR>
