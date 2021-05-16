@@ -243,6 +243,7 @@ syntax sync fromstart
 
 " Prettier
 nnoremap <leader>f :Prettier<CR>
+let g:prettier#autoformat_config_present = 1
 
 " Atalho para cgn
 nnoremap c* *Ncgn
@@ -261,9 +262,9 @@ let g:ale_fixers = {
 \   'javascript': ['eslint'],
 \}
 let g:airline#extensions#ale#enabled = 1
-" let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_text_changed = 'never'
 " let g:ale_lint_on_insert_leave = 0
-" let g:ale_lint_on_enter = 0
+let g:ale_lint_on_enter = 0
 let g:ale_sign_error = '❌'
 let g:ale_sign_info = '🤔'
 let g:ale_sign_style_error = '❌'
