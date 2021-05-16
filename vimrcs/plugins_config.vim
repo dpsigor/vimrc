@@ -25,11 +25,11 @@ call pathogen#helptags()
 " map <leader>o :BufExplorer<cr>
 
 
-""""""""""""""""""""""""""""""
-" => MRU plugin
-""""""""""""""""""""""""""""""
-let MRU_Max_Entries = 400
-map <leader>f :MRU<CR>
+"""""""""""""""""""""""""""""""
+"" => MRU plugin
+"""""""""""""""""""""""""""""""
+"let MRU_Max_Entries = 400
+"map ?alguma coisa? :MRU<CR>
 
 
 """"""""""""""""""""""""""""""
@@ -54,7 +54,7 @@ let g:yankstack_yank_keys = ['y', 'd']
 "map <leader>b :CtrlPBuffer<cr>
 
 " Quickly find and open a recently opened file
-"map <leader>f :CtrlPMRU<CR>
+"map ?era leader f? :CtrlPMRU<CR>
 
 " let g:ctrlp_max_height = 20
 " let g:ctrlp_custom_ignore = 'node_modules\|^\.DS_Store\|^\.git\|^\.coffee'
@@ -173,4 +173,3 @@ nnoremap <silent> <leader>z :Goyo<cr>
 " => Git gutter (Git diff)
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:gitgutter_enabled=0
-nnoremap <silent> <leader>d :GitGutterToggle<cr>
