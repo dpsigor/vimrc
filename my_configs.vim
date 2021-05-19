@@ -263,7 +263,7 @@ let g:ale_fixers = {
 \}
 let g:airline#extensions#ale#enabled = 1
 let g:ale_lint_on_text_changed = 'never'
-" let g:ale_lint_on_insert_leave = 0
+let g:ale_lint_on_insert_leave = 0
 let g:ale_lint_on_enter = 0
 let g:ale_sign_error = '❌'
 let g:ale_sign_info = '🤔'
@@ -272,3 +272,13 @@ let g:ale_sign_style_warning = '🤔'
 let g:ale_sign_warning = '🤔'
 nnoremap ]l :ALENext<CR>
 nnoremap [l :ALEPrevious<CR>
+
+" if you are gonna visual, might as well...
+vmap < <gv
+vmap > >gv
+
+" make Y consitent with D and C (yank til end)
+map Y y$
+
+" better command-line completion
+set wildmenu
