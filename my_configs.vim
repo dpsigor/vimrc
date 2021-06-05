@@ -17,6 +17,9 @@ imap <silent> <C-Up> <Esc>:m .-2<CR>==gi
 vmap <silent> <C-Down> :m '>+1<CR>gv=gv
 vmap <silent> <C-Up> :m '<-2<CR>gv=gv
 
+" Para substituir a palavra sob o curso
+nnoremap <leader>s *<S-n>cgn
+
 " Emojis
 
 ab :checked: ✅
@@ -31,7 +34,6 @@ ab :brain: 🧠
 ab :poo: 💩
 
 " netrw
-nnoremap <C-b> :Lexplore<CR>
 let g:netrw_winsize = 25
 let g:netrw_liststyle = 3
 let g:netrw_banner = 0
@@ -52,6 +54,9 @@ set nowritebackup
 " delays and poor user experience.
 set updatetime=300
 
+" prevents truncated yanks, deletes, etc.
+set viminfo='20,<1000,s1000
+
 " Don't pass messages to |ins-completion-menu|.
 set shortmess+=c
 
@@ -71,21 +76,16 @@ filetype plugin indent on
 call plug#begin('~/.vim/plugged')
 Plug 'dense-analysis/ale'
 Plug 'junegunn/vim-easy-align'
-" post install (yarn install | npm install) then load plugin only for editing supported files
 Plug 'prettier/vim-prettier', {
   \ 'do': 'yarn install',
   \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue', 'yaml', 'html'] }
-
-"------------------ Go Lang --------------------------------------
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 "------------------ Outros Plugs ---------------------------------
 " Plug 'scrooloose/nerdtree'
 Plug 'morhetz/gruvbox'
 " Snippets
 Plug 'SirVer/ultisnips'
-
 " Obs: instalacao manual de git gutter em vim/pack/airblade/
-
 " Fuzzy finder
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
@@ -146,6 +146,8 @@ let g:go_highlight_functions = 1
 let g:go_highlight_function_calls = 1
 let g:go_highlight_extra_types = 1
 let g:go_highlight_operators = 1
+" let g:go_diagnostics_level = 2
+" let g:go_highlight_diagnostic_errors = 1
 
 " Auto formatting and importing
 let g:go_fmt_autosave = 1
@@ -155,14 +157,22 @@ let g:go_fmt_command = "goimports"
 let g:go_auto_type_info = 1
 
 " Autocompletion
-"au filetype go inoremap <buffer> . .<C-x><C-o>
+inoremap <buffer> . .<C-x><C-o>
 
 "LSP que deve encontrar definitions
 let g:go_def_mapping_enabled = 0
 "Go Path
 let g:go_bin_path = $HOME."/go/bin"
-" Abrir def em nova tab
-au FileType go nmap <Leader>dt <Plug>(go-def-tab)
+augroup gobindings
+  au! gobindings
+  au FileType go
+        \  nmap <buffer> <silent> <leader>dt <plug>(go-def-tab)
+        \| nmap <buffer> <silent> <leader>b :w<CR><S-G>o<CR>/*<CR>*/<Esc><S-o>:.!go run .<CR>
+        \| nmap <buffer> <silent> <leader>t <plug>(go-test)
+        \| nmap <buffer> <silent> <leader>tt <plug>(go-alternate-vertical)
+        \| nmap <buffer> <silent> <leader>i <plug>(go-imports)
+        \| nmap <buffer> <silent> <leader>e <plug>(go-iferr)
+augroup end
 
 "-------------- Snippets -----------------------------
 let g:UltiSnipsExpandTrigger="<tab>"
@@ -170,6 +180,8 @@ let g:UltiSnipsJumpForwardTrigger="<c-b>"
 let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 
 "-------------- TypeScript --------------------------
+
+let g:lsp_auto_enable = 1
 nmap <silent> K <Plug>(lsp-hover)
 nmap <silent> gr <plug>(lsp-references)
 nmap <silent> gd <plug>(lsp-definition)
@@ -191,6 +203,14 @@ if (executable('typescript-language-server'))
         \ 'name': 'typescript-language-server',
         \ 'cmd': {server_info->['typescript-language-server --stdio']},
         \ 'allowlist': ['javascript', 'typescript'],
+        \ })
+endif
+
+if executable('bash-language-server')
+  au User lsp_setup call lsp#register_server({
+        \ 'name': 'bash-language-server',
+        \ 'cmd': {server_info->[&shell, &shellcmdflag, 'bash-language-server start']},
+        \ 'allowlist': ['sh'],
         \ })
 endif
 
@@ -270,6 +290,7 @@ let g:ale_sign_info = '🤔'
 let g:ale_sign_style_error = '❌'
 let g:ale_sign_style_warning = '🤔'
 let g:ale_sign_warning = '🤔'
+let g:ale_completion_enabled = 0
 nnoremap ]l :ALENext<CR>
 nnoremap [l :ALEPrevious<CR>
 
@@ -282,3 +303,16 @@ map Y y$
 
 " better command-line completion
 set wildmenu
+
+" " sh macros
+" au FileType sh let @w = 'ciw${p'
+
+" disable arrow keys (vi muscle memory)
+noremap <up> :echoerr "Umm, use k instead"<CR>
+noremap <down> :echoerr "Umm, use j instead"<CR>
+noremap <left> :echoerr "Umm, use h instead"<CR>
+noremap <right> :echoerr "Umm, use l instead"<CR>
+inoremap <up> <NOP>
+inoremap <down> <NOP>
+inoremap <left> <NOP>
+inoremap <right> <NOP>
