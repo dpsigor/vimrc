@@ -74,6 +74,10 @@ filetype plugin indent on
 
 "---------------------------- Plugins ----------------------------
 call plug#begin('~/.vim/plugged')
+Plug 'heavenshell/vim-jsdoc', {
+  \ 'for': ['javascript', 'javascript.jsx','typescript'],
+  \ 'do': 'make install'
+\}
 Plug 'dense-analysis/ale'
 Plug 'junegunn/vim-easy-align'
 Plug 'prettier/vim-prettier', {
@@ -98,7 +102,6 @@ Plug 'mattn/vim-lsp-settings'
 "     \ 'branch': 'next',
 "     \ 'do': 'bash install.sh',
 "     \ }
-
 "" TypeScript
 Plug 'HerringtonDarkholme/yats.vim'
 " ----------------- deoplete, para autocompletion -----------
@@ -108,7 +111,6 @@ else
   Plug 'Shougo/deoplete.nvim'
   Plug 'roxma/nvim-yarp'
   Plug 'roxma/vim-hug-neovim-rpc'
-
 " ---------------- para netrw ------------------------------
 Plug 'tpope/vim-vinegar'
 
@@ -167,17 +169,16 @@ augroup gobindings
   au! gobindings
   au FileType go
         \  nmap <buffer> <silent> <leader>dt <plug>(go-def-tab)
-        \| nmap <buffer> <silent> <leader>b :w<CR><S-G>o<CR>/*<CR>*/<Esc><S-o>:.!go run .<CR>
+        \| nmap <buffer> <silent> <leader>r :w<CR><S-G>o<CR>/*<CR>*/<Esc><S-o>:.!go run .<CR>
         \| nmap <buffer> <silent> <leader>t <plug>(go-test)
         \| nmap <buffer> <silent> <leader>tt <plug>(go-alternate-vertical)
         \| nmap <buffer> <silent> <leader>i <plug>(go-imports)
-        \| nmap <buffer> <silent> <leader>e <plug>(go-iferr)
+        \| nnoremap <buffer> <silent> <leader>c :GoFillStruct<CR>
 augroup end
 
 "-------------- Snippets -----------------------------
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 
 "-------------- TypeScript --------------------------
 
@@ -187,7 +188,7 @@ nmap <silent> gr <plug>(lsp-references)
 nmap <silent> gd <plug>(lsp-definition)
 nmap <silent> [g <plug>(lsp-previous-diagnostic)
 nmap <silent> ]g <plug>(lsp-next-diagnostic)
-nnoremap <leader>a :LspCodeAction<CR>
+nnoremap <leader>l :LspCodeAction<CR>
 let g:lsp_diagnostics_float_cursor = 1
 let g:lsp_diagnostics_highlights_enabled = 1
 let g:lsp_settings_root_markers = [
@@ -223,12 +224,16 @@ augroup lsp_install
   autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
 augroup END
 
+au FileType typescript nnoremap <leader>r :w<CR><S-G>o<CR>:.!tscrun<CR> 
+
+nnoremap <leader>i !}jq<Space>.<Space>><Space>/tmp/json2ts_tmp<Space>&&<Space>cat<Space>/tmp/json2ts_tmp_i<Space>&&<Space>make_types<Space>-i<Space>/tmp/json2ts_tmp_i<Space>/tmp/json2ts_tmp<Space>root<Space>&&<Space>cat<Space>/tmp/json2ts_tmp_i&&echo "" > /tmp/json2ts_tmp_i<CR>
+
 "-------------- Git Gutter --------------------------
 let g:gitgutter_enabled=1
 let g:gitgutter_set_sign_backgrounds=1
 set signcolumn=yes
-nmap [h <plug>(GitGutterPrevHunk)
-nmap ]h <plug>(GitGutterNextHunk)
+nmap [s <plug>(GitGutterPrevHunk)
+nmap ]s <plug>(GitGutterNextHunk)
 highlight GitGutterAdd    guifg=#009900 ctermfg=2
 highlight GitGutterChange guifg=#bbbb00 ctermfg=3
 highlight GitGutterDelete guifg=#ff2222 ctermfg=1
@@ -291,8 +296,8 @@ let g:ale_sign_style_error = '❌'
 let g:ale_sign_style_warning = '🤔'
 let g:ale_sign_warning = '🤔'
 let g:ale_completion_enabled = 0
-nnoremap ]l :ALENext<CR>
-nnoremap [l :ALEPrevious<CR>
+nnoremap ]a :ALENext<CR>
+nnoremap [a :ALEPrevious<CR>
 
 " if you are gonna visual, might as well...
 vmap < <gv
@@ -308,11 +313,23 @@ set wildmenu
 " au FileType sh let @w = 'ciw${p'
 
 " disable arrow keys (vi muscle memory)
-noremap <up> :echoerr "Umm, use k instead"<CR>
-noremap <down> :echoerr "Umm, use j instead"<CR>
-noremap <left> :echoerr "Umm, use h instead"<CR>
-noremap <right> :echoerr "Umm, use l instead"<CR>
+noremap <up> :echoerr "arrow keys 💩"<CR>
+noremap <down> :echoerr "arrow keys 💩"<CR>
+noremap <left> :echoerr "arrow keys 💩"<CR>
+noremap <right> :echoerr "arrow keys 💩"<CR>
 inoremap <up> <NOP>
 inoremap <down> <NOP>
-inoremap <left> <NOP>
+inoremap <left> ``<left>
 inoremap <right> <NOP>
+
+nnoremap j gj
+nnoremap k gk
+nnoremap n nzz
+nnoremap N Nzz
+nnoremap s 0
+nnoremap ç $
+vnoremap s 0
+vnoremap ç $
+nnoremap <leader>a ggVG
+" c/ — Show a count of search results.
+nnoremap <Leader>c/ :%s/<C-r>// /gn<CR>
