@@ -226,7 +226,7 @@ augroup END
 
 au FileType typescript nnoremap <leader>r :w<CR><S-G>o<CR>:.!tscrun<CR> 
 
-nnoremap <leader>i !}jq<Space>.<Space>><Space>/tmp/json2ts_tmp<Space>&&<Space>cat<Space>/tmp/json2ts_tmp_i<Space>&&<Space>make_types<Space>-i<Space>/tmp/json2ts_tmp_i<Space>/tmp/json2ts_tmp<Space>root<Space>&&<Space>cat<Space>/tmp/json2ts_tmp_i&&echo "" > /tmp/json2ts_tmp_i<CR>
+nnoremap <leader>i <S-v>}:s/\n//<CR>!!json2ts<CR>:nohl<CR>
 
 "-------------- Git Gutter --------------------------
 let g:gitgutter_enabled=1
