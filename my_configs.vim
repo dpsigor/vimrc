@@ -23,6 +23,7 @@ nnoremap <leader>s *<S-n>cgn
 " Emojis
 
 ab :checked: ✅
+ab :failed: 🚫
 ab :warning: ⚠️
 ab :pushpin: 📌
 ab :bomb: 💣
@@ -72,53 +73,62 @@ endif
 syntax on
 filetype plugin indent on
 
+"   curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+"     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 "---------------------------- Plugins ----------------------------
-call plug#begin('~/.vim/plugged')
-Plug 'heavenshell/vim-jsdoc', {
-  \ 'for': ['javascript', 'javascript.jsx','typescript'],
-  \ 'do': 'make install'
-\}
-Plug 'dense-analysis/ale'
-Plug 'junegunn/vim-easy-align'
-Plug 'prettier/vim-prettier', {
-  \ 'do': 'yarn install',
-  \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue', 'yaml', 'html'] }
-Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
-"------------------ Outros Plugs ---------------------------------
-" Plug 'scrooloose/nerdtree'
-Plug 'morhetz/gruvbox'
-" Snippets
-Plug 'SirVer/ultisnips'
-" Obs: instalacao manual de git gutter em vim/pack/airblade/
-" Fuzzy finder
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
-" Language Server
-Plug 'prabirshrestha/async.vim'
-Plug 'prabirshrestha/asyncomplete.vim'
-Plug 'prabirshrestha/vim-lsp'
-Plug 'mattn/vim-lsp-settings'
-" Plug 'autozimu/LanguageClient-neovim', {
-"     \ 'branch': 'next',
-"     \ 'do': 'bash install.sh',
-"     \ }
-"" TypeScript
-Plug 'HerringtonDarkholme/yats.vim'
-" ----------------- deoplete, para autocompletion -----------
-if has('nvim')
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-else
-  Plug 'Shougo/deoplete.nvim'
-  Plug 'roxma/nvim-yarp'
-  Plug 'roxma/vim-hug-neovim-rpc'
-" ---------------- para netrw ------------------------------
-Plug 'tpope/vim-vinegar'
+" if filereadable(expand("~.vim/autoload/plug.vim"))
+  call plug#begin('~/.vim/plugged')
+  Plug 'heavenshell/vim-jsdoc', {
+    \ 'for': ['javascript', 'javascript.jsx','typescript'],
+    \ 'do': 'make install'
+  \}
+  Plug 'dense-analysis/ale'
+  Plug 'junegunn/vim-easy-align'
+  Plug 'prettier/vim-prettier', {
+    \ 'do': 'yarn install',
+    \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue', 'yaml', 'html'] }
+  Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+  "------------------ Outros Plugs ---------------------------------
+  " Plug 'scrooloose/nerdtree'
+  Plug 'morhetz/gruvbox'
+  " Snippets
+  Plug 'SirVer/ultisnips'
+  " Obs: instalacao manual de git gutter em vim/pack/airblade/
+  " Fuzzy finder
+  Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+  Plug 'junegunn/fzf.vim'
+  " Language Server
+  Plug 'prabirshrestha/async.vim'
+  Plug 'prabirshrestha/asyncomplete.vim'
+  Plug 'prabirshrestha/vim-lsp'
+  Plug 'mattn/vim-lsp-settings'
+  " Plug 'autozimu/LanguageClient-neovim', {
+  "     \ 'branch': 'next',
+  "     \ 'do': 'bash install.sh',
+  "     \ }
+  "" TypeScript
+  Plug 'HerringtonDarkholme/yats.vim'
+  " Plug 'runoshun/tscompletejob'
+  " Plug 'prabirshrestha/asyncomplete-tscompletejob.vim'
+  "" Docker
+  Plug 'ekalinin/Dockerfile.vim'
+  " ---------- pandoc -------------
+  Plug 'vim-pandoc/vim-pandoc'
+  Plug 'rwxrob/vim-pandoc-syntax-simple'
+  " ----------------- deoplete, para autocompletion -----------
+  " if has('nvim')
+  "   Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+  " else
+  "   Plug 'Shougo/deoplete.nvim'
+  "   Plug 'roxma/nvim-yarp'
+  "   Plug 'roxma/vim-hug-neovim-rpc'
+  " endif
+  " ---------------- para netrw ------------------------------
+  Plug 'tpope/vim-vinegar'
+  call plug#end()
+" endif
 
-endif
-
-call plug#end()
-
-let g:deoplete#enable_at_startup = 1
+" let g:deoplete#enable_at_startup = 1
 
 colorscheme gruvbox
 set cursorline
@@ -150,17 +160,19 @@ let g:go_highlight_extra_types = 1
 let g:go_highlight_operators = 1
 " let g:go_diagnostics_level = 2
 " let g:go_highlight_diagnostic_errors = 1
-
 " Auto formatting and importing
 let g:go_fmt_autosave = 1
 let g:go_fmt_command = "goimports"
-
 " Status line types/signatures
 let g:go_auto_type_info = 1
 
 " Autocompletion
 inoremap <buffer> . .<C-x><C-o>
 
+" Run test on builtin terminal
+let g:go_term_enabled = 1
+let g:go_term_reuse = 1
+let g:go_term_mode = "split"
 "LSP que deve encontrar definitions
 let g:go_def_mapping_enabled = 0
 "Go Path
@@ -169,12 +181,15 @@ augroup gobindings
   au! gobindings
   au FileType go
         \  nmap <buffer> <silent> <leader>dt <plug>(go-def-tab)
-        \| nmap <buffer> <silent> <leader>r :w<CR><S-G>o<CR>/*<CR>*/<Esc><S-o>:.!go run .<CR>
-        \| nmap <buffer> <silent> <leader>t <plug>(go-test)
+        \| nmap <buffer> <silent> <leader>r :w<CR><S-G>o<CR>/*<CR>*/<Esc><S-o>:.!if test -f go.mod; then { go run .; } else { go run main.go; } fi<CR>
+        \| nmap <buffer> <silent> <leader>b :w<CR><S-g>:!go build<CR>
+        \| nmap <buffer> <silent> <leader>t <plug>(go-test-func)
         \| nmap <buffer> <silent> <leader>tt <plug>(go-alternate-vertical)
-        \| nmap <buffer> <silent> <leader>i <plug>(go-imports)
+        \| nmap <leader>i !ipgojson<CR>
         \| nnoremap <buffer> <silent> <leader>c :GoFillStruct<CR>
 augroup end
+
+let g:go_play_browser_command = '/mnt/c/Program\ Files/Google/Chrome/Application/chrome.exe %URL% &'
 
 "-------------- Snippets -----------------------------
 let g:UltiSnipsExpandTrigger="<tab>"
@@ -224,9 +239,12 @@ augroup lsp_install
   autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
 augroup END
 
-au FileType typescript nnoremap <leader>r :w<CR><S-G>o<CR>:.!tscrun<CR> 
-
-nnoremap <leader>i <S-v>}:s/\n//<CR>!!json2ts<CR>:nohl<CR>
+augroup tsbindings
+  au! tsbindings
+  au FileType typescript
+        \  nnoremap <leader>r :w<CR><S-G>o<CR>:.!tscrun<CR> 
+        \| nnoremap <leader>i <S-v>}:s/\n//<CR>!!json2ts<CR>:nohl<CR>
+augroup end
 
 "-------------- Git Gutter --------------------------
 let g:gitgutter_enabled=1
@@ -277,8 +295,20 @@ nnoremap c* *Ncgn
 nnoremap <leader>g :G<CR>
 
 " asyncomplete
+let g:asyncomplete_auto_popup = 1
+
+" let g:asyncomplete_auto_completeopt = 0
+" set completeopt=menuone,noinsert,noselect,preview
+" autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
+
 inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
 imap <c-space> <Plug>(asyncomplete_force_refresh)
+
+" call asyncomplete#register_source(asyncomplete#sources#tscompletejob#get_source_options({
+"     \ 'name': 'tscompletejob',
+"     \ 'allowlist': ['typescript'],
+"     \ 'completor': function('asyncomplete#sources#tscompletejob#completor'),
+"     \ }))
 
 " ALE
 let g:ale_disable_lsp = 1
@@ -333,3 +363,7 @@ vnoremap ç $
 nnoremap <leader>a ggVG
 " c/ — Show a count of search results.
 nnoremap <Leader>c/ :%s/<C-r>// /gn<CR>
+
+au FileType javascript nnoremap <leader>r :w<CR><S-G>o<CR>:.!node index.js<CR> 
+
+let g:pandoc#spell#enabled=0
