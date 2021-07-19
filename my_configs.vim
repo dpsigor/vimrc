@@ -243,7 +243,9 @@ augroup tsbindings
   au! tsbindings
   au FileType typescript
         \  nnoremap <leader>r :w<CR><S-G>o<CR>:.!tscrun<CR> 
+        \| nnoremap <leader>t :w<CR>:!tsc<CR> 
         \| nnoremap <leader>i <S-v>}:s/\n//<CR>!!json2ts<CR>:nohl<CR>
+        \| nnoremap <leader>f f(lca"url<S-o>const url = pA;const options = j<S-a>ca{optionsk$p%<S-a>;j<S-i>const res = await oconst data = await res.json();
 augroup end
 
 "-------------- Git Gutter --------------------------
@@ -285,7 +287,7 @@ set redrawtime=10000
 syntax sync fromstart
 
 " Prettier
-nnoremap <leader>f :Prettier<CR>
+" nnoremap <leader>f :Prettier<CR>
 let g:prettier#autoformat_config_present = 1
 
 " Atalho para cgn
